@@ -710,6 +710,13 @@
 </footer>
 
 <script>
+  // Extract UTM parameters from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const utmSource = urlParams.get('utm_source');
+  const utmMedium = urlParams.get('utm_medium');
+  const utmCampaign = urlParams.get('utm_campaign');
+  const utmContent = urlParams.get('utm_content');
+
   // CTA scroll
   document.querySelector('.hero-cta').addEventListener('click', function(e) {
     e.preventDefault();
@@ -742,12 +749,16 @@
       return;
     }
 
-    const data = { 
-      name, 
-      phone, 
-      facility: facility === 'other' ? otherFacility : facility, 
-      location: location || null, 
-      comments: comments || null 
+    const data = {
+      name,
+      phone,
+      facility: facility === 'other' ? otherFacility : facility,
+      location: location || null,
+      comments: comments || null,
+      utm_source: utmSource || null,
+      utm_medium: utmMedium || null,
+      utm_campaign: utmCampaign || null,
+      utm_content: utmContent || null
     };
 
     // Disable button while submitting
