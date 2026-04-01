@@ -532,7 +532,7 @@ src="https://www.facebook.com/tr?id=1462962988870721&ev=PageView&noscript=1"
 </section>
 
 <!-- ═══ PAIN POINTS ═══ -->
-<section class="pain-section">
+<section class="pain-section" data-section="pain-points">
   <h2>אתם מומחים בספורט, לא בשיווק</h2>
   <div class="pain-cards">
 
@@ -586,7 +586,7 @@ src="https://www.facebook.com/tr?id=1462962988870721&ev=PageView&noscript=1"
 <hr class="divider">
 
 <!-- ═══ SOLUTION ═══ -->
-<section class="solution-section">
+<section class="solution-section" data-section="solution">
   <h2>Oasis — אני על זה</h2>
   <p class="solution-subtitle">אתם ממשיכים לנהל את המתקן, Oasis מטפל בכל מה שנופל בין הכיסאות.</p>
   <div class="features">
@@ -652,7 +652,7 @@ src="https://www.facebook.com/tr?id=1462962988870721&ev=PageView&noscript=1"
 </section>
 
 <!-- ═══ SOCIAL PROOF ═══ -->
-<section class="proof-section">
+<section class="proof-section" data-section="social-proof">
   <div class="proof-inner">
     <p class="proof-quote">
       ״כל חודש נעלמו לי 5-6 מתאמנים בלי לומר מילה. לא היה לי זמן לרדוף אחרי כל אחד. הייתי צריך מישהו שיעשה את זה בשבילי״
@@ -662,7 +662,7 @@ src="https://www.facebook.com/tr?id=1462962988870721&ev=PageView&noscript=1"
 </section>
 
 <!-- ═══ SIGNUP FORM ═══ -->
-<section class="form-section" id="signup">
+<section class="form-section" id="signup" data-section="signup-form">
   <div class="form-inner">
     <h2>התחילו להשתמש ב-Oasis</h2>
     <p class="subtitle">להרשמה השאירו פרטים</p>
@@ -821,6 +821,35 @@ src="https://www.facebook.com/tr?id=1462962988870721&ev=PageView&noscript=1"
   const s = document.createElement('style');
   s.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}';
   document.head.appendChild(s);
+
+  // ── Scroll depth tracking (25%, 50%, 75%, 100%) ──
+  const scrollMilestones = { 25: false, 50: false, 75: false, 100: false };
+  window.addEventListener('scroll', function() {
+    const scrollPct = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
+    [25, 50, 75, 100].forEach(m => {
+      if (scrollPct >= m && !scrollMilestones[m]) {
+        scrollMilestones[m] = true;
+        fbq('trackCustom', 'ScrollDepth', { percent: m });
+      }
+    });
+  });
+
+  // ── Section visibility tracking ──
+  const sectionObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        fbq('trackCustom', 'SectionView', { section: e.target.dataset.section });
+        sectionObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('[data-section]').forEach(el => sectionObs.observe(el));
+
+  // ── CTA click tracking ──
+  document.querySelector('.hero-cta').addEventListener('click', function() {
+    fbq('trackCustom', 'CTAClick', { location: 'hero' });
+  });
 
   // Scroll reveal
   const obs = new IntersectionObserver((entries) => {
